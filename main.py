@@ -23,7 +23,7 @@ Hi, I'm Hall 1 Jamband's Music Room Booking Bot! Here are the list of commands a
     await context.bot.send_message(chat_id=update.effective_chat.id, text=start_message)
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await start(update, context)
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="This is a test")
 
 
 if __name__ == '__main__':
