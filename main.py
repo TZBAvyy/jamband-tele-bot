@@ -22,12 +22,15 @@ Hi, I'm Hall 1 Jamband's Music Room Booking Bot! Here are the list of commands a
 """
     await context.bot.send_message(chat_id=update.effective_chat.id, text=start_message)
 
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await start(update, context)
+
 
 if __name__ == '__main__':
     application = ApplicationBuilder().token(TELE_API_TOKEN).build()
     
     start_handler = CommandHandler('start', start)
-    help_handler = CommandHandler('help', start)
+    help_handler = CommandHandler('help', help_command)
     read_handler = CommandHandler('read', read_all_entries)
 
     application.add_handler(start_handler)
