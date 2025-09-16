@@ -4,6 +4,7 @@ from telegram.ext import filters, MessageHandler, ApplicationBuilder, ContextTyp
 import os
 from dotenv import load_dotenv
 import requests
+from datetime import datetime, timedelta
 
 load_dotenv()
 TELE_API_TOKEN = os.getenv("TELE_API_TOKEN")
@@ -13,6 +14,9 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
+
+timezone = "Asia/Singapore"
+time_offset = timedelta(hours=8)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
@@ -30,8 +34,16 @@ async def read_all_entries(update: Update, context: ContextTypes.DEFAULT_TYPE):
         'Accept': 'application/json',
     }
     response = requests.get(url=APPSCRIPT_API_URL, headers=headers, allow_redirects=True)
-    data = response.json()
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=str(data))
+    data = response.json()['data']
+    chat_response = "Here are all the entries:"
+    for entry in data:
+        print(entry) #2025-09-10T09:00:00.000Z
+        start = datetime.strptime(entry[1], "%Y-%m-%dT%H:%M:%S.000Z") + time_offset
+        end = datetime.strptime(entry[2], "%Y-%m-%dT%H:%M:%S.000Z") + time_offset
+        chat_response += f"""
+{start} - {end} | Booked by {entry[3]} [{entry[4]}] for {entry[6]} | Type: {entry[5]}
+""" 
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=chat_response)
 
 if __name__ == '__main__':
     application = ApplicationBuilder().token(TELE_API_TOKEN).build()
